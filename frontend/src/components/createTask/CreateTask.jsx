@@ -32,15 +32,15 @@ function CreateTask() {
         setDescription("")
     }
 
-    // const showToast = () => {
-    //     const toast = document.getElementById('toast');
-    //     toast.style.display = "block"
-    //     setTimeout(hideToast,2000)
-    // }
-    // const hideToast = () => {
-    //     const toast = document.getElementById('toast');
-    //     toast.style.display = "none"
-    // }
+    const showToast = () => {
+        const toast = document.getElementById('toast');
+        toast.style.display = "block"
+        setTimeout(hideToast,2000)
+    }
+    const hideToast = () => {
+        const toast = document.getElementById('toast');
+        toast.style.display = "none"
+    }
     return (
         <div className="addContainer md:w-1/3 md:mx-auto mx-3 mt-3 flex justify-center">
             <div className='w-11/12'>
