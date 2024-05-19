@@ -32,7 +32,40 @@ nodemon server
 cd frontend
 npm start
 ```
-# Live Preview
-Check live preview here [https://todo-app-b96a5.web.app/](https://todo-app-b96a5.web.app/)
+
+## Version Control and Development Lifecycle
+
+The development of this project is managed using version control with three main branches representing different stages of the development lifecycle:
+
+1. **Development Branch**:
+    - All new features and enhancements are first implemented and tested in the development branch.
+    - This branch is the active area for ongoing development activities.
+
+2. **Testing Branch**:
+    - Once features are developed, they are merged into the testing branch.
+    - This branch is used for rigorous testing to ensure the stability and reliability of the features.
+    - Only thoroughly tested code is promoted from this branch.
+
+3. **Deployment (Main) Branch**:
+    - The main branch contains the production-ready code.
+    - Only fully tested and approved features from the testing branch are merged here.
+    - This branch is deployed to the production environment.
+
+## Features
+
+- **Task Management**:
+    - Create, update, and delete tasks.
+    - Mark tasks as complete or incomplete.
+
+- **Mailing Feature**:
+    - Automated email alerts to notify users when a task is due.
+
+## Technology Stack
+
+- **MERN Stack**:
+    - **MongoDB**: Database
+    - **Express.js**: Web framework for Node.js
+    - **React**: Front-end library
+    - **Node.js**: JavaScript runtime environment
 
 
