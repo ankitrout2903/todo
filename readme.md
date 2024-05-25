@@ -1,4 +1,3 @@
-Sure! Here's an updated version of the README file, including API documentation for the backend routes.
 
 ---
 
@@ -365,5 +364,3 @@ To run end-to-end tests using Jest, Supertest, and mongodb-memory-server, follow
 This setup ensures comprehensive testing of the user, task, and forgot password functionalities, providing confidence in the stability and reliability of your application.
 
 ---
-
-This README provides an overview of the application, installation instructions, configuration,
