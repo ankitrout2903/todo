@@ -20,7 +20,7 @@ const forgotPassword = async (req, res) => {
   user.resetToken = resetToken;
   await user.save();
 
-  //Send email with reset token
+  // Send email with reset token
   const resetUrl = `https://todo-app-b96a5.web.app/resetPassword?token=${resetToken}`;
   var transporter = createTransport({
     service: "gmail",
@@ -40,6 +40,7 @@ const forgotPassword = async (req, res) => {
     html: `<h1>Reset Password</h1><h2>Click on the link to reset your password</h2><h3>${resetUrl}</h3>`,
   };
 
+  // Send the email with the reset URL
   await transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
       console.log(error);
@@ -48,14 +49,15 @@ const forgotPassword = async (req, res) => {
     }
   });
 
+  // Respond to the client indicating that the reset email has been sent
   res
     .status(200)
     .json({
-      message: "A link to reset your password have been sent to your email.",
+      message: "A link to reset your password has been sent to your email.",
     });
 };
 
-//  Route to handle password reset request
+// Route to handle password reset request
 const resetPassword = async (req, res) => {
   const { token, password } = req.body;
 
@@ -69,9 +71,11 @@ const resetPassword = async (req, res) => {
   // Update password
   const salt = await bcrypt.genSalt(10);
   user.password = await bcrypt.hash(password, salt);
-  user.resetToken = null;
+  user.resetToken = null; // Clear the reset token
   await user.save();
 
+  // Respond to the client indicating that the password has been successfully reset
   res.status(200).json({ message: "Password reset successful" });
 };
+
 export { forgotPassword, resetPassword };

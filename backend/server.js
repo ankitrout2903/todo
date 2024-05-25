@@ -1,46 +1,50 @@
-import express from "express"
-import mongoose from "mongoose"
-import cors from "cors"
-import dotenv from "dotenv"
+import express from "express"; // Importing express framework
+import mongoose from "mongoose"; // Importing mongoose for MongoDB connection
+import cors from "cors"; // Importing cors middleware for handling cross-origin requests
+import dotenv from "dotenv"; // Importing dotenv for environment variables
 
-import userRouter from "./routes/userRoute.js"
-import taskRouter from "./routes/taskRoute.js"
-import forgotPasswordRouter from "./routes/forgotPassword.js"
+import userRouter from "./routes/userRoute.js"; // Importing user routes
+import taskRouter from "./routes/taskRoute.js"; // Importing task routes
+import forgotPasswordRouter from "./routes/forgotPassword.js"; // Importing forgot password routes
 
-//app config
-dotenv.config()
-const app = express()
-const port = process.env.PORT || 8001
-mongoose.set('strictQuery', true);
+// App Configuration
+dotenv.config(); // Loading environment variables from .env file
+const app = express(); // Creating an instance of express application
+const port = process.env.PORT || 8001; // Setting the port to listen on, using environment variable or default to 8001
+mongoose.set('strictQuery', true); // Setting mongoose option to enforce strict query behavior
 
-//middlewares
-app.use(express.json())
-app.use(cors(
-    {
-        origin: "*",
-    }
-))
+// Middleware Configuration
+app.use(express.json()); // Parsing incoming JSON requests
+app.use(cors({ origin: "*" })); // Allowing requests from all origins
 
-//db config
-mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-}, (err) => {
+// Database Configuration
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true }, (err) => {
     if (err) {
-        console.log(err)
+        console.log(err); // Logging any errors that occur during MongoDB connection
     } else {
-        console.log("DB Connected")
+        console.log("DB Connected"); // Logging successful database connection
     }
-})
+});
 
-//api endpoints
+// API Endpoints
+
+// Root endpoint
 app.get("/", (req, res) => {
-    res.status(200).send("server connect");
-   });
-  
+    res.status(200).send("server connect"); // Sending a simple response to indicate server connection
+});
 
-app.use("/api/user", userRouter)
-app.use("/api/task", taskRouter)
-app.use("/api/forgotPassword", forgotPasswordRouter)
+// Mounting user routes
+app.use("/api/user", userRouter);
 
-//listen
-app.listen(port, () => console.log(`Listening on localhost:${port}`))
+// Mounting task routes
+app.use("/api/task", taskRouter);
+
+// Mounting forgot password routes
+app.use("/api/forgotPassword", forgotPasswordRouter);
+
+// Server Listening
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(port, () => console.log(`Listening on localhost:${port}`)); // Starting the server and listening on specified port
+}
+
+export default app; // Exporting the express application instance

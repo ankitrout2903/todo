@@ -3,7 +3,9 @@ import userModel from "../models/userModel.js";
 import { createTransport } from "nodemailer";
 import dotenv from "dotenv";
 dotenv.config();
-const sendMail = (email, subject, title, description,dueDate) => {
+
+// Function to send email notifications
+const sendMail = (email, subject, title, description, dueDate) => {
   var transporter = createTransport({
     service: "gmail",
     auth: {
@@ -28,55 +30,74 @@ const sendMail = (email, subject, title, description,dueDate) => {
   });
 };
 
+// Function to send reminder emails for overdue tasks
 const sendReminderEmails = async () => {
-    try {
-      const overdueTasks = await taskModel.find({
-        dueDate: { $lt: new Date() }, // Find tasks where dueDate is less than current date
-        completed: false // Only consider tasks that are not completed
-      }).populate('userId');
-  
-      overdueTasks.forEach(async (task) => {
-        // Send email for each overdue task
-        await sendMail(task.userId.email, "Task Overdue", task.title, task.description, task.dueDate);
-      });
-    } catch (error) {
-      console.error("Error sending reminder emails:", error);
-    }
-  };
+  try {
+    // Find tasks where dueDate is less than the current date and are not completed
+    const overdueTasks = await taskModel.find({
+      dueDate: { $lt: new Date() },
+      completed: false
+    }).populate('userId');
 
+    // Send email for each overdue task
+    overdueTasks.forEach(async (task) => {
+      await sendMail(task.userId.email, "Task Overdue", task.title, task.description, task.dueDate);
+    });
+  } catch (error) {
+    console.error("Error sending reminder emails:", error);
+  }
+};
 
-
+// Function to add a new task
 const addTask = async (req, res) => {
+  try {
     const { title, description, dueDate } = req.body;
     const userId = req.user.id;
-    const user = await userModel.find({ _id: userId });
-  
-    // Ensure dueDate is parsed to Date object
+
+    // Validate the input
+    if (!title) {
+      return res.status(400).json({ message: "Title is required" });
+    }
+    if (!dueDate) {
+      return res.status(400).json({ message: "Due date is required" });
+    }
+
+    // Ensure dueDate is parsed to a Date object
     const parsedDueDate = new Date(dueDate);
-  
+    if (isNaN(parsedDueDate)) {
+      return res.status(400).json({ message: "Invalid due date" });
+    }
+
+    // Fetch the user
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Create a new task
     const newTask = new taskModel({
       title,
       description,
       completed: false,
       userId,
-      dueDate: parsedDueDate, // Assign parsed dueDate
+      dueDate: parsedDueDate,
     });
-  
-    newTask
-      .save()
-      .then(() => {
-        // Format dueDate for email
-        const formattedDueDate = parsedDueDate.toDateString();
-        sendMail(user[0].email, "Task Added", title, description, formattedDueDate);
-        return res.status(200).json({ message: "Task added successfully" });
-      })
-      .catch((error) => {
-        return res.status(500).json({ message: error.message });
-      });
-  };
-  
 
+    // Save the new task
+    await newTask.save();
 
+    // Format dueDate for email
+    const formattedDueDate = parsedDueDate.toDateString();
+    sendMail(user.email, "Task Added", title, description, formattedDueDate);
+
+    return res.status(200).json({ message: "Task added successfully" });
+
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// Function to remove a task
 const removeTask = (req, res) => {
   const { id } = req.body;
   console.log("id: ", id);
@@ -86,6 +107,7 @@ const removeTask = (req, res) => {
     .catch((error) => res.status(501).json({ message: error.message }));
 };
 
+// Function to get all tasks for the logged-in user
 const getTask = (req, res) => {
   taskModel
     .find({ userId: req.user.id })
@@ -93,12 +115,14 @@ const getTask = (req, res) => {
     .catch((error) => res.status(501).json({ message: error.message }));
 };
 
+// Function to edit a task
 const editTask = (req, res) => {
-  const { id, title, description, completed,dueDate } = req.body;
+  const { id, title, description, completed, dueDate } = req.body;
   taskModel
-    .findByIdAndUpdate(id, { title, description, completed,dueDate }, { new: true })
+    .findByIdAndUpdate(id, { title, description, completed, dueDate }, { new: true })
     .then((updatedTask) => res.status(200).json(updatedTask))
     .catch((error) => res.status(500).json({ message: error.message }));
 };
 
-export { addTask, getTask, removeTask, editTask,sendReminderEmails };
+// Exporting the functions
+export { addTask, getTask, removeTask, editTask, sendReminderEmails };

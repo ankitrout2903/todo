@@ -1,12 +1,24 @@
-import express from "express"
-import { addTask, getTask, removeTask,editTask,sendReminderEmails} from "../controllers/taskController.js"
-import requireAuth from "../middleware/requireAuth.js";
-const router = express.Router();
+import express from "express"; // Importing express framework
+import { addTask, getTask, removeTask, editTask, sendReminderEmails } from "../controllers/taskController.js"; // Importing controller functions for task management
+import requireAuth from "../middleware/requireAuth.js"; // Importing authentication middleware
 
+const router = express.Router(); // Creating a new router instance
+
+// Define routes for task management
+
+// Route for adding a new task
 router.post('/addTask', requireAuth, addTask);
-router.get('/getTask/:taskId', requireAuth, getTask); // Assuming you're fetching a specific task by its ID
-router.delete('/removeTask/:taskId', requireAuth, removeTask); // Use DELETE method for removing a task
-router.put('/editTask/:taskId', requireAuth, editTask); // Use PUT method for editing/updating a task
+
+// Route for getting a specific task by its ID
+router.get('/getTask/:taskId', requireAuth, getTask);
+
+// Route for removing a task by its ID
+router.delete('/removeTask/:taskId', requireAuth, removeTask);
+
+// Route for editing/updating a task by its ID
+router.put('/editTask/:taskId', requireAuth, editTask);
+
+// Route for sending reminder emails for overdue tasks
 router.get('/reminder', requireAuth, sendReminderEmails);
 
-export default router;
+export default router; // Exporting the router to be used in other parts of the application
